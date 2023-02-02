@@ -5,7 +5,11 @@ import study.servlet.web.frontcontroller.MyView;
 import study.servlet.web.frontcontroller.v3.controller.MemberFormControllerV3;
 import study.servlet.web.frontcontroller.v3.controller.MemberListControllerV3;
 import study.servlet.web.frontcontroller.v3.controller.MemberSaveControllerV3;
+import study.servlet.web.frontcontroller.v4.controller.MemberFormControllerV4;
+import study.servlet.web.frontcontroller.v4.controller.MemberListControllerV4;
+import study.servlet.web.frontcontroller.v4.controller.MemberSaveControllerV4;
 import study.servlet.web.frontcontroller.v5.adapter.ControllerV3HandlerAdapter;
+import study.servlet.web.frontcontroller.v5.adapter.ControllerV4HandlerAdapter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,10 +38,15 @@ public class FrontControllerServletV5 extends HttpServlet {
         handlerMappingMap.put("/front-controller/v5/v3/members/new-form", new MemberFormControllerV3());
         handlerMappingMap.put("/front-controller/v5/v3/members/save", new MemberSaveControllerV3());
         handlerMappingMap.put("/front-controller/v5/v3/members", new MemberListControllerV3());
+
+        handlerMappingMap.put("/front-controller/v5/v4/members/new-form", new MemberFormControllerV4());
+        handlerMappingMap.put("/front-controller/v5/v4/members/save", new MemberSaveControllerV4());
+        handlerMappingMap.put("/front-controller/v5/v4/members", new MemberListControllerV4());
     }
 
-    private boolean initHandlerAdapters() {
-        return handlerAdapters.add(new ControllerV3HandlerAdapter());
+    private void initHandlerAdapters() {
+        handlerAdapters.add(new ControllerV3HandlerAdapter());
+        handlerAdapters.add(new ControllerV4HandlerAdapter());
     }
 
     @Override
@@ -54,11 +63,12 @@ public class FrontControllerServletV5 extends HttpServlet {
         //핸들러 어댑터 찾아오기
         MyHandlerAdapter adapter = getHandlerAdapter(handler);
         ModelView mv = adapter.handle(request, response, handler);
-        
+
         MyView view = viewResolver(mv.getViewName());
         view.render(mv.getModel(), request, response);
     }
 
+    //핸들러 맵핑 정보 가져오기
     private Object getHandler(HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         return handlerMappingMap.get(requestURI);
